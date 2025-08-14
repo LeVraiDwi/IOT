@@ -1,69 +1,40 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
-
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://vagrantcloud.com/search.
-  # lastest stable version Debian box from Vagrant cloud
-  config.vm.box = "debian/bookworm64"
-  
-  # Define first machine (Server)
+  config.vm.box = "debian/bookworm64" # Latest stable Debian release
+  config.vm.provider "virtualbox" do |v|
+    v.cpus = 1 # Minumum 2 CPUs for K3s server
+    v.memory = 1024 # Minimum 2GB RAM for K3s server
+  end
+  # VM serveur
   config.vm.define "tcosseS" do |serveur|
     serveur.vm.hostname = "tcosseS"
     serveur.vm.network "private_network", ip: "192.168.56.110"
-    serveur.vm.disk :disk, size: "10GB", primary: true
 
-    serveur.vm.provider "virtualbox" do |vb|
-      vb.name = "tcosse-server"
-      vb.memory = 512
-      vb.cpus = 1
-    end
-    serveur.ssh.insert_key = true
-    
-    # Install K3s server (controller mode)
     serveur.vm.provision "shell", inline: <<-SHELL
-      sudo apt-get update -y
-      sudo apt-get install -y curl
-      curl -sfL https://get.k3s.io | sh -
+      apt-get update && apt-get install -y curl
+      curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--node-ip=192.168.56.110 --bind-address=192.168.56.110 --advertise-address=192.168.56.110" sh -
+      mkdir -p /vagrant/shared
+      cp /var/lib/rancher/k3s/server/node-token /vagrant/shared/token
+      chmod 644 /etc/rancher/k3s/k3s.yaml
+      echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
+      echo 'alias k=kubectl' >> /home/vagrant/.bashrc
     SHELL
-
-    # No-password SSH (public key automatically managed by Vagrant)
   end
 
-  # Define second machine (ServerWorker)
+  # VM worker
   config.vm.define "mtsujiSW" do |worker|
     worker.vm.hostname = "mtsujiSW"
     worker.vm.network "private_network", ip: "192.168.56.111"
-    worker.vm.disk :disk, size: "10GB", primary: true
 
-    worker.vm.provider "virtualbox" do |vb|
-      vb.name = "mtsuji-worker"
-      vb.memory = 512
-      vb.cpus = 1
-    end
-    worker.ssh.insert_key = true
-    
-    # Wait for the server to be ready, then install K3s agent
     worker.vm.provision "shell", inline: <<-SHELL
-      # Wait for the server
-      until nc -z 192.168.56.110 6443; do sleep 1; done
-      sudo apt-get update -y
-      sudo apt-get install -y curl
-      # Fetch the K3s token from the server via SSH
-      TOKEN=$(ssh -o StrictHostKeyChecking=no vagrant@192.168.56.110 "sudo cat /var/lib/rancher/k3s/server/node-token")
-
-      # Install the agent and connect to the server
-      curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.110:6443 K3S_TOKEN=$TOKEN sh -
+      while [ ! -f /vagrant/shared/token ]; do
+        echo "En attente du token depuis le serveur..."
+        sleep 2
+      done
+      apt-get update && apt-get install -y curl
+      export TOKEN=$(cat /vagrant/shared/token)
+      export K3S_AGENT_ARGS="--node-ip=192.168.56.111"
+      curl -sfL https://get.k3s.io | K3S_URL="https://192.168.56.110:6443" K3S_TOKEN="$TOKEN" sh -s - --server https://192.168.56.110:6443
+      echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
     SHELL
-    
-    # No-password SSH
   end
 end

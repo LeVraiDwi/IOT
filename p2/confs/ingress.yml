@@ -4,6 +4,11 @@ metadata:
   name: app-ingress
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
+    kubernetes.io/ingress.class: "traefik"
+    ingress.kubernetes.io/force-ssl-redirect: "false"  
+    ingress.kubernetes.io/ssl-redirect: "false"
+    traefik.ingress.kubernetes.io/frontend-entry-points: http
+
 spec:
   rules:
     - http:
@@ -12,7 +17,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: app1-service
+                name: app3-service
                 port:
                   number: 8080
     - host: app1.com

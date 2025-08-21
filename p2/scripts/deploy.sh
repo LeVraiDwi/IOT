@@ -14,3 +14,8 @@ kubectl apply -f /vagrant/confs/app3/service.yml
 
 echo "Deploying ingress !"
 kubectl apply -f /vagrant/confs/ingress.yml
+
+echo "Updating /etc/hosts file !"
+echo "192.168.56.110 app1.com" | sudo tee -a /etc/hosts
+echo "192.168.56.110 app2.com" | sudo tee -a /etc/hosts
+echo "192.168.56.110 app3.com" | sudo tee -a /etc/hosts

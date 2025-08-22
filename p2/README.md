@@ -69,22 +69,30 @@ Ce script exécute les opérations suivantes :
 ```bash
 # accès à app1.com
 curl -H "Host:app1.com" 192.168.56.110
+curl -v app1.com
 
 # accès à app2.com
 curl -H "Host:app2.com" 192.168.56.110
+curl -v app2.com
 
 # accès à app3.com
 curl -H "Host:app3.com" 192.168.56.110
+curl -v app3.com
 
 # accès par défaut (affiche app3)
 curl 192.168.56.110
+
+# access avec Host precise
+curl -v --resolve app1.com:80:192.168.56.110 http://app1.com
+curl -v --resolve app2.com:80:192.168.56.110 http://app2.com
+curl -v --resolve app3.com:80:192.168.56.110 http://app3.com
 ```
 
 ### 2. Vérification dans le navigateur
 Accéder dans le navigateur à :
-- http://app1.com
-- http://app2.com
-- http://app3.com
+- ~~http://app1.com~~ -> Please check with curl command
+- ~~http://app2.com~~ -> Please check with curl command
+- ~~http://app3.com~~ -> Please check with curl command
 - http://192.168.56.110 -> **app3.com**
 
 ## Fichiers de configuration

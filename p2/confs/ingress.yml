@@ -4,12 +4,9 @@ metadata:
   name: app-ingress
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    kubernetes.io/ingress.class: "traefik"
-    ingress.kubernetes.io/force-ssl-redirect: "false"  
-    ingress.kubernetes.io/ssl-redirect: "false"
-    traefik.ingress.kubernetes.io/frontend-entry-points: http
 
 spec:
+  ingressClassName: traefik
   rules:
     - http:
         paths:

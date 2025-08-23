@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
       rm /vagrant/shared/token
       echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
       echo 'alias k=kubectl' >> /home/vagrant/.bashrc
-      curl -sfL https://get.k3s.io | K3S_URL="https://192.168.56.110:6443" K3S_TOKEN="$TOKEN" sh -s - --server "https://192.168.56.110:6443"
+      curl -sfL https://get.k3s.io | K3S_URL="https://192.168.56.110:6443" K3S_TOKEN="$TOKEN" sh -
     SHELL
   end
 end

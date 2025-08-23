@@ -117,3 +117,15 @@ Accéder dans le navigateur à :
 - app2 est configuré avec 3 réplicas et effectue une répartition de charge
 - La redirection automatique vers HTTPS est désactivée
 - L'accès par défaut (sans nom d'hôte) affiche app3 
+
+**tester replicaset Self-healing test:**
+```bash
+# description de replicaset
+kubectl describe rs -l app=app2
+# get pod name
+kubectl get po -l app=app2 
+# surveiller des pods avec watch command
+kubectl get po -l app=app2 -w
+# delete pod name
+kubectl delete pod <pod-name>
+```

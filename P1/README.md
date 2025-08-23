@@ -138,3 +138,7 @@ vagrant destroy -f
 ```bash
 vagrant ssh NomMachine
 ```
+
+```bash
+sudo journalctl -u k3s-agent -f
+```

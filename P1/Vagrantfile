@@ -13,10 +13,13 @@ Vagrant.configure("2") do |config|
       apt-get update && apt-get install -y curl
       curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--node-ip=192.168.56.110 --bind-address=192.168.56.110 --advertise-address=192.168.56.110" sh -
       mkdir -p /vagrant/shared
-      cp /var/lib/rancher/k3s/server/node-token /vagrant/shared/token
+      cp /etc/rancher/k3s/k3s.yaml /vagrant/shared/k3s.yaml
+      sed -i 's/127.0.0.1/192.168.56.110/g' /vagrant/shared/k3s.yaml
+      chmod 644 /vagrant/shared/k3s.yaml
       chmod 644 /etc/rancher/k3s/k3s.yaml
       echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
       echo 'alias k=kubectl' >> /home/vagrant/.bashrc
+      cp /var/lib/rancher/k3s/server/node-token /vagrant/shared/token
     SHELL
   end
 
@@ -33,8 +36,13 @@ Vagrant.configure("2") do |config|
       apt-get update && apt-get install -y curl
       export TOKEN=$(cat /vagrant/shared/token)
       export K3S_AGENT_ARGS="--node-ip=192.168.56.111"
-      curl -sfL https://get.k3s.io | K3S_URL="https://192.168.56.110:6443" K3S_TOKEN="$TOKEN" sh -s - --server https://192.168.56.110:6443
+      mkdir /home/vagrant/.kube
+      cat /vagrant/shared/k3s.yaml > /home/vagrant/.kube/config
+      rm /vagrant/shared/k3s.yaml
+      rm /vagrant/shared/token
       echo 'export PATH=$PATH:/usr/local/bin' >> /home/vagrant/.bashrc
+      echo 'alias k=kubectl' >> /home/vagrant/.bashrc
+      curl -sfL https://get.k3s.io | K3S_URL="https://192.168.56.110:6443" K3S_TOKEN="$TOKEN" sh -s - --server "https://192.168.56.110:6443"
     SHELL
   end
 end

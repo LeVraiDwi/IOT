@@ -120,6 +120,17 @@ end
 🚀 **Lancer la VM** *(remonte l’arborescence jusqu’au premier `Vagrantfile` trouvé)*  
 **Launch the VM** (searches upward for the first `Vagrantfile`):
 
+if needed, enable KVM :
+
+```bash
+	lsmod | grep kvm
+
+	# Unload KVM modules
+	sudo modprobe -r kvm_intel   # For Intel CPUs
+	sudo modprobe -r kvm_amd     # For AMD CPUs  
+	sudo modprobe -r kvm
+```
+
 ```bash
 vagrant up
 ```

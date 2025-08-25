@@ -1,0 +1,39 @@
+global:
+  hosts:
+    domain: localgitlab
+    https: false
+  ingress:
+    configureCertmanager: false
+    enabled: false
+  storage:
+    defaultClass: ""
+    accessMode: ReadWriteOnce
+    size: 2Gi
+
+postgresql:
+  install: true
+  persistentVolume:
+    size: 1Gi
+
+redis:
+  install: true
+  persistence:
+    size: 512Mi
+
+nginx-ingress:
+  enabled: false
+
+gitlab:
+  webservice:
+    service:
+      type: NodePort
+      nodePort: 32080
+    persistence:
+      size: 1Gi
+
+sidekiq:
+  replicas: 0
+
+gitaly:
+  enabled: true
+

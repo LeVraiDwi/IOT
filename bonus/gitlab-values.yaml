@@ -1,0 +1,37 @@
+global:
+  hosts:
+    domain: localgitlab
+    https: false
+  ingress:
+    configureCertmanager: false
+    enabled: false
+  storage:
+    defaultClass: ""
+    accessMode: ReadWriteOnce
+    size: 2Gi  # total default storage limit
+
+postgresql:
+  install: true
+  persistentVolume:
+    size: 1Gi  # small DB for demo
+
+redis:
+  install: true
+  persistence:
+    size: 512Mi  # small Redis
+
+nginx-ingress:
+  enabled: false
+
+gitlab:
+  webservice:
+    service:
+      type: ClusterIP
+    persistence:
+      size: 1Gi  # repo data
+
+sidekiq:
+  replicas: 0  # disable background jobs for demo
+
+gitaly:
+  enabled: true  # needed for repo hosting
